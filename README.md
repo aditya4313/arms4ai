@@ -42,6 +42,16 @@ Company Website:
 ---
 ---
 
+# 🟢 OUTPUT — Cloudless Mosaic
+
+The final processed mosaic, after applying cloud removal, tile alignment, and seam blending, is available for download below:
+
+👉 [**Download Cloudless Mosaic (Google Drive)**](https://drive.google.com/file/d/1S-ZwtwZr8tKzcwfpcDIdrDYdXxhBHfni/view?usp=sharing)
+
+---
+
+---
+
 # 🗺️ Satellite Mosaic, Cloud Removal & Seamless Stitching Pipeline
 
 This project implements a complete end-to-end workflow for generating a **high-quality, cloud-reduced, and seamless satellite mosaic** from multiple input tiles.  
