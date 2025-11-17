@@ -40,76 +40,127 @@ Company Website:
 
 ---
 ---
+---
 
-# 🗺️ Satellite Mosaic, Cloud Removal & Seamless Stitching
+# 🗺️ Satellite Mosaic, Cloud Removal & Seamless Stitching Pipeline
 
-This project takes a folder full of **satellite image tiles** and converts them into **one clean, seamless, cloud-removed mosaic**.  
-Everything is fully automated and easy to run.
+This project implements a complete end-to-end workflow for generating a **high-quality, cloud-reduced, and seamless satellite mosaic** from multiple input tiles.  
+The pipeline integrates reprojection, cloud detection, mask refinement, overlap handling, and seam blending to ensure a clean and visually consistent output.
 
 ---
 
-## 🔧 What This Pipeline Uses
+## 🔧 Components Used in the Pipeline
 
-To build the final mosaic, the code uses:
+This system relies on a combination of geospatial and image-processing libraries:
 
-- 🧭 **Rasterio** → reading tiles, writing the final mosaic, coordinate handling  
-- 🗺️ **Reprojection** → placing each tile into the correct geographic location  
-- ☁️ **Custom Cloud Masking** → detects bright white + blue-ish haze clouds  
-- 🔍 **Pixel-based Cloud Removal** → keeps only the clean parts of each tile  
-- 🔄 **Gaussian Blending** → smooths the borders where tiles overlap  
-- 🎨 **Seam Weighting Logic** → decides which tile looks better in overlap regions  
-- 🧮 **NumPy** → fast image & math operations  
-- 🌫️ **Scipy (Gaussian Filter + Dilation)** → cloud smoothing + edge softening  
-- 📦 **TQDM** → progress bar while processing tiles
+- **Rasterio** – Handles reading tiles, writing the output mosaic, coordinate systems, and geospatial transforms.  
+- **Reprojection (rasterio.warp)** – Ensures each tile is accurately placed on the global canvas.  
+- **NumPy** – Performs fast numerical operations on image arrays.  
+- **SciPy (Gaussian Filter & Binary Dilation)** – Used for cloud mask smoothing and removing cloud edges.  
+- **Gaussian Weighting** – Produces smooth transitions in overlapping regions.  
+- **TQDM** – Displays progress while processing large datasets.  
+- **Matplotlib** – Generates a preview of the final mosaic.
 
 ---
 
-## 🧠 How the Code Works (Simple English)
+# 🧠 How the Pipeline Works (Formal, Clear, and Sector-Wise Explanation)
 
-Even a beginner can understand the flow — it's like assembling a puzzle but smarter:
-
-### 1️⃣ **All tiles are scanned**
-The script reads all `.tif` tiles inside the folder and finds where each tile belongs on the big map.
-
-### 2️⃣ **A big empty canvas is created**
-One huge blank image (mosaic) is created with correct width, height & coordinates.
-
-### 3️⃣ **Each tile is reprojected & aligned**
-Using Rasterio + reprojection, every tile is:
-- put at the correct real-world location  
-- resized/interpolated if needed  
-- matched to the global mosaic coordinate system  
-
-### 4️⃣ **Clouds are detected automatically**
-Using a custom cloud mask:
-- very bright pixels (RGB > threshold)  
-- bluish cloud patches  
-- cloud outlines are expanded using dilation  
-These pixels are removed or down-weighted.
-
-### 5️⃣ **Good pixels from each tile are used**
-Cloudy areas get ignored.  
-Cleaner tile regions get higher priority.
-
-### 6️⃣ **Overlapping tiles are blended**
-Where tiles overlap:
-- the script compares both tiles  
-- checks which one looks cleaner  
-- blends them smoothly using Gaussian weights  
-This removes **hard seams**, **strips**, and **color jumps**.
-
-### 7️⃣ **Final mosaic becomes clean, bright & seamless**
-A single output file is created with:
-✔ Cloud removed  
-✔ Colors preserved  
-✔ No visible seams  
-✔ Smooth transitions  
-✔ All tiles stitched perfectly  
+The pipeline is divided into multiple functional stages.  
+Each stage plays a specific role in producing a clean mosaic.
 
 ---
 
-## 🖼️ **Final Output (Preview)**
+## **1️⃣ Tile Collection & Spatial Canvas Construction**  
+The pipeline begins by scanning the folder for all `.tif` satellite tiles.  
+For these tiles:
 
-*(Your output mosaic image will be shown here)*
+- Their **geographical bounds** are extracted.
+- A **global bounding box** is computed to determine the extent of the final mosaic.
+- Using this extent, a **blank canvas** of the appropriate resolution, height, width, and CRS is created.
 
- 
+**Purpose:**  
+To ensure all tiles fit accurately onto one unified global coordinate system.
+
+---
+
+## **2️⃣ Tile Reprojection & Spatial Alignment**  
+Each tile is then:
+
+- Reprojected into the output coordinate reference system.  
+- Resampled using bilinear interpolation for smooth positioning.  
+- Placed precisely at the correct pixel location on the mosaic using spatial window calculations.
+
+**Purpose:**  
+To ensure every tile aligns perfectly, even if tiles originate from different projections or coordinate systems.
+
+---
+
+## **3️⃣ Cloud Detection & Mask Generation**  
+A dedicated cloud-masking function is applied to every tile. It identifies:
+
+- Very bright white areas  
+- Blue-white atmospheric haze  
+- High-intensity pixel clusters  
+
+After initial detection, **binary dilation** is applied to expand cloud regions and eliminate residual edges.
+
+A **Gaussian filter** then smooths the mask so transitions are not harsh.
+
+**Purpose:**  
+To remove clouds effectively while preventing hard edges or leftover cloud fragments.
+
+---
+
+## **4️⃣ Selecting Usable (Cloud-Free) Pixels**  
+Using the cloud mask:
+
+- Clouded pixels receive **low weight** or are discarded entirely.  
+- Cloud-free pixels receive **high priority**.  
+- Tiles containing too few valid pixels are automatically skipped.
+
+**Purpose:**  
+To ensure only clean and reliable pixel values contribute to the final mosaic.
+
+---
+
+## **5️⃣ Overlap Detection & Decision Logic**  
+When a new tile overlaps with regions already written to the mosaic:
+
+- The existing and incoming pixel values are compared.  
+- If the overlap is small, the new tile is simply merged.  
+- If the overlap is significant, the values are blended intelligently.
+
+**Purpose:**  
+To maintain consistency and avoid abrupt boundaries between tiles.
+
+---
+
+## **6️⃣ Seam Blending Using Gaussian Weighting**  
+For overlapping regions, the algorithm:
+
+- Computes the squared difference between the two pixel sets.  
+- Smooths these differences using a Gaussian filter.  
+- Normalizes them to create a **difference-based weight map**.  
+- Applies an exponential function to assign higher weight to cleaner pixels.  
+- Blends the tiles accordingly.
+
+**Purpose:**  
+To remove visible seams, adjust for brightness mismatches, and produce a uniform mosaic without tile edges.
+
+---
+
+## **7️⃣ Mosaic Writing & Final Preview Generation**  
+The blended result is written back into the mosaic canvas.  
+Once all tiles are processed:
+
+- A low-resolution preview of the final mosaic is generated.  
+- Colors are preserved, clouds are reduced, and seams are minimized.
+
+**Purpose:**  
+To confirm visually that the mosaic is seamless, clean, and cloud-corrected.
+
+---
+
+# 🖼️ Final Output Preview
+*(You may insert your mosaic output image below this section.)*
+
