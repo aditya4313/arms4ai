@@ -1,4 +1,4 @@
-# 👨‍💻 About Me
+<img width="971" height="923" alt="Screenshot 2025-11-18 at 12 52 21 AM" src="https://github.com/user-attachments/assets/245d428f-82f6-47f0-9016-387db279dbc1" /># 👨‍💻 About Me
 
 Hello! My name is **Roushan Kumar**, and I am a **4th-year student at Netaji Subhas University of Technology (NSUT), New Delhi**.  
 I have a strong interest in **Image Processing, Machine Learning, and Deep Learning**, and I enjoy building models that solve real-world problems.
@@ -162,5 +162,6 @@ To confirm visually that the mosaic is seamless, clean, and cloud-corrected.
 ---
 
 # 🖼️ Final Output Preview
-*(You may insert your mosaic output image below this section.)*
+
+<img width="971" height="923" alt="Screenshot 2025-11-18 at 12 52 21 AM" src="https://github.com/user-attachments/assets/bf6e654e-8b84-4bba-9de4-0a347c656b00" />
 
