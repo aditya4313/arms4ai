@@ -63,7 +63,7 @@ This system relies on a combination of geospatial and image-processing libraries
 
 ---
 
-# 🧠 How the Pipeline Works (Formal, Clear, and Sector-Wise Explanation)
+# 🧠 How the Pipeline Works 
 
 The pipeline is divided into multiple functional stages.  
 Each stage plays a specific role in producing a clean mosaic.
