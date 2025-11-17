@@ -1,6 +1,6 @@
 # 👨‍💻 About Me
 
-Hello! My name is **Roushan Kumar**, and I am a **4th-year student at Netaji Subhas University of Technology (NSUT), New Delhi**.  
+Hello! My name is **Roushan Kumar**(2022UEC2513), and I am a **4th-year student at Netaji Subhas University of Technology (NSUT), New Delhi**.  
 I have a strong interest in **Image Processing, Machine Learning, and Deep Learning**, and I enjoy building models that solve real-world problems.
 
 ---
